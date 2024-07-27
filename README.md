@@ -201,7 +201,7 @@ python ./exps/generate_seeds.py --mode train --dataset SZ-TAXI --seq_len 168 --p
 
 ### Other results
 
-We compare our iteratively pruning strategy with the one-time pruning baseline, we also provide the scripts to reproduce the results of the one-time pruning strategy:
+We compare our iteratively pruning strategy with the one-time pruning baseline in our paper, so that we also provide the scripts to reproduce the results of the one-time pruning strategy:
 
 ```shell
 # prune the search space in one time
