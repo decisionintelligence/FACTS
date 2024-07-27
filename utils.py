@@ -637,7 +637,7 @@ def data_preprocess(data_path, train_len, pred_len, in_dim, adj_mx, type='csv', 
     np.save(cache_path, dtw_distance)
     dtw_matrix = np.load(cache_path)
 
-    generate geo and sem masks
+    # generate geo and sem masks
     sh_mx = adj_mx.copy()
     sh_mx[sh_mx > 0] = 1
     sh_mx[sh_mx == 0] = 511

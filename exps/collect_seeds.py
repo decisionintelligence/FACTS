@@ -14,7 +14,7 @@ from utils import masked_mae, masked_mape, masked_rmse, metric, \
     config_dataloader
 from NAS_Net.genotypes import PRIMITIVES
 from NAS_Net.st_net import Network
-from Task_Config_mini import Task_Config
+from Task_Config import Task_Config
 from tqdm import tqdm
 
 from keras.utils import to_categorical

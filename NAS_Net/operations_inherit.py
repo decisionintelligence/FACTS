@@ -62,15 +62,8 @@ def read_params(path):
 
 
 params_dir = '/home/AutoCTS++/seeds/params_pool/params'
-# parent_models中存放着所有的父模型的参数，形式为一个列表，里面每个元素是一个元组(arch,params)，其中arch形如[[0, 1], [0, 8], [1, 3], [0, 6], [2, 2], [2, 7], [3, 11]],
 parent_models = read_params(params_dir)
 
-# parent_models = [([[0, 1], [0, 8], [1, 3], [0, 6], [2, 2], [2, 7], [3, 11]], torch.load(
-#     '/home/AutoCTS++/results/test/pems/PEMS08/GIN/params/[[0, 1], [0, 8], [1, 3], [0, 6], [2, 2], [2, 7], [3, 11]]_1.pth')),
-#                  ([[0, 4], [0, 5], [1, 9], [0, 10], [2, 13], [2, 14], [3, 12]], torch.load(
-#                      '/home/AutoCTS++/results/test/pems/PEMS08/GIN/params/[[0, 4], [0, 5], [1, 9], [0, 10], [2, 13], [2, 14], [3, 12]]_1.pth'))]
-
-# 是否使用重型参数,对于每一组历史参数都学一个权重,例如一组n个axbxc大小的权值向量，学习的时候用的矩阵式nxaxbxc，而轻型用的是1xn
 if_heavy = True
 
 calculator = lambda tune_weight, history_weight: torch.einsum('i...,i...->...', tune_weight,
@@ -2044,7 +2037,6 @@ class LaplacianPE(nn.Module):
 
 
 def _calculate_normalized_laplacian(adj):
-    # 从原始距离矩阵，生成归一化的拉普拉斯矩阵？
     adj = sp.coo_matrix(adj)
     d = np.array(adj.sum(1))
     isolated_point_num = np.sum(np.where(d, 0, 1))
@@ -2057,11 +2049,10 @@ def _calculate_normalized_laplacian(adj):
 
 def cal_lape(adj_mx, lape_dim=8):
     L, isolated_point_num = _calculate_normalized_laplacian(adj_mx)
-    EigVal, EigVec = np.linalg.eig(L.toarray())  # 求特征值和特征向量
+    EigVal, EigVec = np.linalg.eig(L.toarray())
     idx = EigVal.argsort()
     EigVal, EigVec = EigVal[idx], np.real(EigVec[:, idx])
 
-    # 这里的lape_dim决定了保留多少个 smallest non-trivial eigenvectors，为什么是smallest？
     laplacian_pe = torch.from_numpy(EigVec[:, isolated_point_num + 1: lape_dim + isolated_point_num + 1]).float()
     laplacian_pe.require_grad = False
     return laplacian_pe
