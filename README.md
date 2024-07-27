@@ -91,7 +91,7 @@ After running the scripts above, we create all the static information for tasks,
 python ./exps/iteratively_search_space_pruning.py --mode iteratively
 ```
 
-Then we collect the seeds in the pruned search space by parallel running in 32 A800 gpus. We provide the scripts used in our machine. One can edit their own gpu number in the scripts:
+Then we collect the seeds in the pruned search space by parallel running on 32 A800 gpus. We provide the scripts used in our machine. One can edit their own gpu number in the scripts:
 
 ```shell
 # Collect seeds
@@ -154,7 +154,7 @@ python ./exps/rank_the_optimal_subspace.py --mode search --dataset SZ-TAXI --seq
 python ./exps/rank_the_optimal_subspace.py --mode search --dataset SZ-TAXI --seq_len 168 --pred_len 1
 ```
 
-After finding the optimal architectures for all the tasks, we can reproduce the SOTA results in Table 6 and Table 7 of our paper by training them with our **fast parameter adaptation** strategy:
+After finding the optimal architectures for all the tasks, we can reproduce the SOTA results in **Table 6** and **Table 7** of our paper by training them with our **fast parameter adaptation** strategy:
 
 ```shell
 # Train the optimal ST-blocks with fast parameter adaptation (template)
@@ -201,7 +201,7 @@ python ./exps/generate_seeds.py --mode train --dataset SZ-TAXI --seq_len 168 --p
 
 ### Other results
 
-We compare our iteratively pruning strategy with the on-time pruning baseline, we also provide the scripts the reproduce the one-time pruning strategy:
+We compare our iteratively pruning strategy with the one-time pruning baseline, we also provide the scripts to reproduce the results of the one-time pruning strategy:
 
 ```shell
 # prune the search space in one time
