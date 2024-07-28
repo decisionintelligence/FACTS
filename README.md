@@ -167,7 +167,7 @@ After finding the optimal architectures for all the tasks, we can reproduce the 
 python ./exps/generate_seeds.py --mode train --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
 ```
 
-Specifically, the downstream tasks in our paper can be evaluated by following scripts:
+We then train the optimal architectures in the downstream [7 datasets](https://www.dropbox.com/scl/fi/49385685dgo0grdfb476w/datasets.zip?rlkey=n303gyh7w7zunecxw2hzastt7&dl=0):
 
 ```shell
 # Specific

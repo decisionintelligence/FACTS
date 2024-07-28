@@ -262,8 +262,12 @@ class Random_NAS:
 
                 return
 
-        elif args.mode == 'iteratively':
-            archs = self.archs
+        elif args.mode == 'mean':
+            archs = np.load(f'../results/searched_archs/{args.dataset}/{args.ap}/param_{args.exp_id}.npy')
+
+            self.save_dir = '../seeds/params_pool'
+            if not os.path.exists(self.save_dir):
+                os.makedirs(self.save_dir)
 
     def result_process(self, arch, id, info1, info2, info3, time_cost):
         clean_set = []
