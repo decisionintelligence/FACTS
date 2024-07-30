@@ -209,29 +209,21 @@ python ./exps/generate_seeds.py --mode inherit --dataset SZ-TAXI --seq_len 168 -
 
 
 
-#### Zero-shot Search
+### Other results
 
-For ease of reproduction, we also provide the checkpoint of **TAP** in `NAS_Net/ArchPredictor/ArchPredictor_param`, the file of the optiminal subspace in `./seeds/selected_combs_3750.npy` ,and the collected seeds in `./seeds/pretrain`. One can utilize the checkpoint to directly search optimal architectures for their own tasks, the whole workflow is listed as below:
+For other empircal results, we also provide scripts for reproduction.
+
+We conduct experiments to compare the accuracy during the pruning process in **Table 8**, this can be easily reproducted by using the seeds collected in each phase to pretrain the TAP, then search and train an optimal architecture for dataset Electricity.
 
 ```shell
-# Generate statistical features for all subsets
-bash ./scripts/generate_statistical_feature_for_subsets.sh
-
-# Generate semantic features for all subsets
-bash ./scripts/generate_task_feature_for_subsets.sh
-
-# Search the optimal ST-block (template)
-python ./exps/rank_the_optimal_subspace.py --mode search --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
-
-# Train the optimal ST-blocks with fast parameter adaptation (template)
-python ./exps/generate_seeds.py --mode train --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
+python ./exps/rank_the_optimal_subspace.py --mode train --seed_dir <location of seeds>
+python ./exps/rank_the_optimal_subspace.py --mode search --dataset Electricity --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset Electricity --seq_len 12 --pred_len 12
 ```
 
 
 
-### Other results
-
-We compare our iteratively pruning strategy with the one-time pruning baseline in our paper, so that we also provide the scripts to reproduce the results of the one-time pruning strategy:
+We compare our iteratively pruning strategy with the one-time pruning baseline in **Table 9**, so that we also provide the scripts to reproduce the results of the one-time pruning strategy:
 
 ```shell
 # prune the search space in one time
@@ -256,7 +248,7 @@ bash ./scripts/pretrain_6.sh &
 python ./exps/rank_the_optimal_subspace.py --mode train
 ```
 
-And we can also reproduce the results in **Table 9** by running the scripts as below:
+And we can also reproduce the results by running the scripts as below:
 
 ```shell
 # Search the optimal ST-block (template)
@@ -268,7 +260,7 @@ python ./exps/generate_seeds.py --mode inherit --dataset <dataset_name> --seq_le
 
 
 
-To compare with our **fast parameter adaptation** strategy, we also set two baselines named **simple average** and **wo/adapt**. We provide the scripts to reproduce their results in **Table 11**：
+To compare with our **fast parameter adaptation** strategy, we also set two baselines named **simple average** and **wo/adapt**. We provide the scripts to reproduce their results in **Figure 9**：
 
 ```shell
 # wo/adapt
@@ -278,5 +270,62 @@ python ./exps/generate_seeds.py --mode train --dataset <dataset_name> --seq_len 
 ```shell
 # simple average
 python ./exps/generate_seeds.py --mode mean --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
+```
+
+
+
+We also release the details of ablation studies in **Table 11** and **Table 13**. 
+
+In **Table 11**, we compare the effects of different modules in **TAP** to validate our design:
+
+```shell
+# The baseline without task module
+python ./exps/rank_the_optimal_subspace_task.py --mode train
+
+python ./exps/rank_the_optimal_subspace_task.py --mode search --dataset PEMS-BAY --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset PEMS-BAY --seq_len 12 --pred_len 12
+python ./exps/rank_the_optimal_subspace_task.py --mode search --dataset Electricity --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset Electricity --seq_len 12 --pred_len 12
+python ./exps/rank_the_optimal_subspace_task.py --mode search --dataset NYC-TAXI --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset NYC-TAXI --seq_len 12 --pred_len 12
+```
+
+```shell
+# The baseline without sem module
+python ./exps/rank_the_optimal_subspace_sem.py --mode train
+
+python ./exps/rank_the_optimal_subspace_sem.py --mode search --dataset PEMS-BAY --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset PEMS-BAY --seq_len 12 --pred_len 12
+python ./exps/rank_the_optimal_subspace_sem.py --mode search --dataset Electricity --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset Electricity --seq_len 12 --pred_len 12
+python ./exps/rank_the_optimal_subspace_sem.py --mode search --dataset NYC-TAXI --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset NYC-TAXI --seq_len 12 --pred_len 12
+```
+
+```shell
+# The baseline without stat module
+python ./exps/rank_the_optimal_subspace_stat.py --mode train
+
+python ./exps/rank_the_optimal_subspace_stat.py --mode search --dataset PEMS-BAY --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset PEMS-BAY --seq_len 12 --pred_len 12
+python ./exps/rank_the_optimal_subspace_stat.py --mode search --dataset Electricity --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset Electricity --seq_len 12 --pred_len 12
+python ./exps/rank_the_optimal_subspace_stat.py --mode search --dataset NYC-TAXI --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset NYC-TAXI --seq_len 12 --pred_len 12
+```
+
+
+
+In **Table 13**, we compare the different pretraining stategies of TAP:
+
+```shell
+# with the uniform sampling strategy 
+python ./exps/iteratively_search_space_pruning.py --mode one-shot
+
+# Search the optimal ST-block (template)
+python ./exps/rank_the_optimal_subspace.py --mode search --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
+
+# Train the optimal ST-blocks (template)
+python ./exps/generate_seeds.py --mode inherit --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
 ```
 
