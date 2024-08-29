@@ -160,7 +160,7 @@ python ./exps/rank_the_optimal_subspace.py --mode search --dataset SZ-TAXI --seq
 python ./exps/rank_the_optimal_subspace.py --mode search --dataset SZ-TAXI --seq_len 168 --pred_len 1
 ```
 
-After finding the optimal architectures for all the tasks, we can reproduce the SOTA results in **Table 6** and **Table 7** of our paper by training them with our **fast parameter adaptation** strategy:
+After finding the optimal architectures for all the tasks, we can reproduce the SOTA results in **Table 4** and **Table 5** of our paper by training them with our **fast parameter adaptation** strategy:
 
 ```shell
 # Train the optimal ST-blocks with fast parameter adaptation (template)
@@ -213,7 +213,7 @@ python ./exps/generate_seeds.py --mode inherit --dataset SZ-TAXI --seq_len 168 -
 
 For other empircal results, we also provide scripts for reproduction.
 
-We conduct experiments to compare the accuracy during the pruning process in **Table 8**, this can be easily reproducted by using the seeds collected in each phase to pretrain the TAP, then search and train an optimal architecture for dataset Electricity.
+We conduct experiments to compare the accuracy during the pruning process in **Table 6**, this can be easily reproducted by using the seeds collected in each phase to pretrain the TAP, then search and train an optimal architecture for dataset Electricity.
 
 ```shell
 python ./exps/rank_the_optimal_subspace.py --mode train --seed_dir <location of seeds>
@@ -223,7 +223,7 @@ python ./exps/generate_seeds.py --mode inherit --dataset Electricity --seq_len 1
 
 
 
-We compare our iteratively pruning strategy with the one-time pruning baseline in **Table 9**, so that we also provide the scripts to reproduce the results of the one-time pruning strategy:
+We compare our iteratively pruning strategy with the one-time pruning baseline in **Table 7**, so that we also provide the scripts to reproduce the results of the one-time pruning strategy:
 
 ```shell
 # prune the search space in one time
@@ -274,9 +274,7 @@ python ./exps/generate_seeds.py --mode mean --dataset <dataset_name> --seq_len <
 
 
 
-We also release the details of ablation studies in **Table 11** and **Table 13**. 
-
-In **Table 11**, we compare the effects of different modules in **TAP** to validate our design:
+We also release the details of ablation studies in **Table 9**. In **Table 9**, we compare the effects of different modules in **TAP** to validate our design:
 
 ```shell
 # The baseline without task module
@@ -312,20 +310,5 @@ python ./exps/rank_the_optimal_subspace_stat.py --mode search --dataset Electric
 python ./exps/generate_seeds.py --mode inherit --dataset Electricity --seq_len 12 --pred_len 12
 python ./exps/rank_the_optimal_subspace_stat.py --mode search --dataset NYC-TAXI --seq_len 12 --pred_len 12
 python ./exps/generate_seeds.py --mode inherit --dataset NYC-TAXI --seq_len 12 --pred_len 12
-```
-
-
-
-In **Table 13**, we compare the different pretraining stategies of TAP:
-
-```shell
-# with the uniform sampling strategy 
-python ./exps/iteratively_search_space_pruning.py --mode one-shot
-
-# Search the optimal ST-block (template)
-python ./exps/rank_the_optimal_subspace.py --mode search --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
-
-# Train the optimal ST-blocks (template)
-python ./exps/generate_seeds.py --mode inherit --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
 ```
 
