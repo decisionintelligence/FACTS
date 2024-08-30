@@ -260,7 +260,26 @@ python ./exps/generate_seeds.py --mode inherit --dataset <dataset_name> --seq_le
 
 
 
-To compare with our **fast parameter adaptation** strategy, we also set two baselines named **simple average** and **wo/adapt**. We provide the scripts to reproduce their results in **Figure 9**：
+To compare with EDF and mean MAE, which are used to evaluate the qualities of combs, we conduct the iteractively pruning processes respectively with EDF and mean MAE, and report the results in the **Table 8**:
+
+```shell
+# Collect seeds
+bash ./scripts/pretrain_0.sh &
+bash ./scripts/pretrain_1.sh &
+bash ./scripts/pretrain_2.sh &
+bash ./scripts/pretrain_3.sh &
+bash ./scripts/pretrain_4.sh &
+bash ./scripts/pretrain_5.sh &
+bash ./scripts/pretrain_6.sh &
+
+python ./exps/rank_the_optimal_subspace.py --mode train
+
+# for example
+python ./exps/rank_the_optimal_subspace.py --mode search --dataset Electricity --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset Electricity --seq_len 12 --pred_len 12
+```
+
+To compare with our **fast parameter adaptation** strategy, we also set two baselines named **simple average** and **wo/adapt**. We provide the scripts to reproduce their results in **Figure 8**：
 
 ```shell
 # wo/adapt
@@ -274,7 +293,7 @@ python ./exps/generate_seeds.py --mode mean --dataset <dataset_name> --seq_len <
 
 
 
-We also release the details of ablation studies in **Table 9**. In **Table 9**, we compare the effects of different modules in **TAP** to validate our design:
+We also release the details of ablation studies in **Table 10**. In **Table 10**, we compare the effects of different modules in **TAP** to validate our design:
 
 ```shell
 # The baseline without task module
@@ -310,5 +329,26 @@ python ./exps/rank_the_optimal_subspace_stat.py --mode search --dataset Electric
 python ./exps/generate_seeds.py --mode inherit --dataset Electricity --seq_len 12 --pred_len 12
 python ./exps/rank_the_optimal_subspace_stat.py --mode search --dataset NYC-TAXI --seq_len 12 --pred_len 12
 python ./exps/generate_seeds.py --mode inherit --dataset NYC-TAXI --seq_len 12 --pred_len 12
+```
+
+
+
+For **Table 12**, we set different variants of numbers of seeds and conduct the iteratively pruning process and evaluate end-to-end on the benchmark.:
+
+```shell
+# Collect seeds
+bash ./scripts/pretrain_0.sh &
+bash ./scripts/pretrain_1.sh &
+bash ./scripts/pretrain_2.sh &
+bash ./scripts/pretrain_3.sh &
+bash ./scripts/pretrain_4.sh &
+bash ./scripts/pretrain_5.sh &
+bash ./scripts/pretrain_6.sh &
+
+python ./exps/rank_the_optimal_subspace.py --mode train
+
+# for example
+python ./exps/rank_the_optimal_subspace.py --mode search --dataset Electricity --seq_len 12 --pred_len 12
+python ./exps/generate_seeds.py --mode inherit --dataset Electricity --seq_len 12 --pred_len 12
 ```
 
