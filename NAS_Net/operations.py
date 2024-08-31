@@ -46,8 +46,6 @@ class Nlinear(nn.Module):
         self.seq_len = input_lengh
         self.pred_len = output_length
 
-        # Use this line if you want to visualize the weights
-        # self.Linear.weight = nn.Parameter((1/self.seq_len)*torch.ones([self.pred_len,self.seq_len]))
         self.channels = c_in
         self.individual = False
         if self.individual:

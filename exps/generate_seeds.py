@@ -232,10 +232,8 @@ class Random_NAS:
                 print(f'arch number: {i}')
                 arch = archs[i]
 
-
                 _, _, _, inherit_model = train_inherit_model(self.dataloader, self.adj_mx, self.scaler, arch,
                                                              self.geo_mask, self.sem_mask)
-
                 t1 = time.time()
 
                 model = Network(self.adj_mx, args, arch, self.geo_mask, self.sem_mask)

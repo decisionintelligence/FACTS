@@ -64,7 +64,7 @@ We provide all the scripts to repoduce the whole pretrain process and the main e
 
 As illustrated in FACTS,  we first iteratively prune the large search space through a GBM-based pruner, while the pruning process is coupled with the collection of seeds. We provide the correspongding scripts as belows:
 
-First, we create **100**  tasks from [11 datasets](https://www.dropbox.com/scl/fi/49385685dgo0grdfb476w/datasets.zip?rlkey=n303gyh7w7zunecxw2hzastt7&dl=0) equipped with two forecasting settings for pretraining, this process is implemented by a heuristic slicing method.  With the random seed provided in the code, we can reproduce the process and generate subsets in a specified dir ./subsets , we also show the task settings in `exps/Task_config.py` to ensure the reproducibility of pretraining tasks:
+First, we create **200**  tasks from [11 datasets](https://www.dropbox.com/scl/fi/49385685dgo0grdfb476w/datasets.zip?rlkey=n303gyh7w7zunecxw2hzastt7&dl=0) equipped with two forecasting settings for pretraining, this process is implemented by a heuristic slicing method.  With the random seed provided in the code, we can reproduce the process and generate subsets in a specified dir ./subsets , we also show the task settings in `exps/Task_config.py` to ensure the reproducibility of pretraining tasks:
 
 ```shell
 # Create tasks for pretraining

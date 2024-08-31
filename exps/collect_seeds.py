@@ -181,7 +181,6 @@ def permuteUnique(nums):
 
 
 def get_combs(num_ops, splits):
-
     all_combs = []
     for split in splits:
         if num_ops < len(split):  # 丢弃不合法的分割
@@ -222,7 +221,6 @@ def get_base_genos(topos):
 
 
 def get_archs(comb):
-
     op_list = []
     for i in range(num_ops):
         op_list += [i] * comb[i]

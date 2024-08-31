@@ -99,18 +99,18 @@ def load_final_noisy_valid_set(epoch):
 
 
 
-def generate_EDF(arch_seeds, threshold):  # 这个阈值应该再迭代过程中动态调整？？？考虑到EDF的计算方式，可能会有很多不同comb对应相同label，如何处理这个问题？
+def generate_EDF(arch_seeds, threshold):
     """from (arch, mae) to (comb, EDF)"""
 
     # collect (comb, acc_list) pair
     comb_to_accs = dict()
     accs = []
     for arch_acc in arch_seeds:
-        arch, acc = arch_acc  # 要不要对mae取倒数？
+        arch, acc = arch_acc
         _, op = zip(*arch)
         comb = to_categorical(op, num_classes=len(PRIMITIVES), dtype=int)
         comb = np.sum(comb, axis=0).tolist()
-        str_comb = ''.join(str(v) for v in comb)  # 转成str方便用字典存储
+        str_comb = ''.join(str(v) for v in comb)
         comb_to_accs.setdefault(str_comb, []).append(acc)
         accs.append(acc)
 
@@ -132,7 +132,7 @@ def generate_EDF(arch_seeds, threshold):  # 这个阈值应该再迭代过程中
 
 def main():
     gbm_params = {
-        'boosting_type': 'gbdt',  # 是不是应该换成LGBoost？
+        'boosting_type': 'gbdt',
         'objective': 'regression',
         'metric': {'l2'},
         'num_leaves': args.leaves,
@@ -184,7 +184,6 @@ def main():
             train_set = load_seed(os.path.join('../seeds', args.dataset, f'iteratively_{args.threshold}'), 4)
             args.threshold -= threshold_gap
             search_space = np.load(f'../seeds/comb_{length}.npy', search_space)
-
 
     elif args.mode == 'one-shot':
         noisy_train_set = load_seed('../seeds/PEMS07_1/PEMS07_1', 15)

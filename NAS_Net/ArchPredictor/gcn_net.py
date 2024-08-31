@@ -21,9 +21,6 @@ class GCN(nn.Module):
             x = F.relu(l(x, adj))
         x = self.last_layer(x, adj)
         x = F.relu(x)
-        # for l in self.layers:
-        #     x = (l(x, adj))
-        # x = self.last_layer(x, adj)
 
         return x
 

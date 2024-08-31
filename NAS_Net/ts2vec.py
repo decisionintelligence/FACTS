@@ -105,7 +105,6 @@ class TS2Vec:
             n_epoch_iters = 0
 
             interrupted = False
-            # 每个batch返回的是一个list，里面每个tensor代表从每个dataset的tensor里取出batch_size个sample组成的小的tensor
             for batch in train_loader:
                 if n_iters is not None and self.n_iters >= n_iters:
                     interrupted = True

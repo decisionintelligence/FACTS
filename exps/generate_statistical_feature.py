@@ -61,7 +61,6 @@ if __name__ == '__main__':
         train_data = data[:, train_slice]
     else:
         raise ValueError(f"Unknown loader {args.loader}.")
-
     print('done')
 
 

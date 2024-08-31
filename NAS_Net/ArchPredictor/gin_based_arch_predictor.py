@@ -255,11 +255,7 @@ def evaluate(test_loader, ap, criterion):
 
 
 def geno_to_adj(arch):
-    # arch.shape = [7, 2]
-    # 输出邻接矩阵，和节点特征
-    # 这里的邻接矩阵对应op为顶点的DAG，和Darts相反
-    # GCN处理无向图，这里DAG是有向图，所以需要改改？？？参考Wei Wen的文章
-    node_num = len(arch) + 2  # 加上一个input和一个output节点
+    node_num = len(arch) + 2
     adj = np.zeros((node_num, node_num))
     ops = [len(PRIMITIVES)]
     for i in range(len(arch)):

@@ -39,11 +39,6 @@ class DataEmbedding(nn.Module):
 
         # add periodic embedding
         x = x.permute(0, 3, 2, 1)  # [64, 12, 170, 32]
-        origin_x = origin_x.permute(0, 3, 2, 1)  # [64, 12, 170, 9]
-        # if self.add_time_in_day:
-        #     x += self.daytime_embedding((origin_x[:, :, :, self.feature_dim] * self.minute_size).round().long())
-        # if self.add_day_in_week:
-        #     x += self.weekday_embedding(origin_x[:, :, :, self.feature_dim + 1: self.feature_dim + 8].argmax(dim=3))
 
         # add spatial embedding [64, 12, 170, 32]
         spe = self.spe(lap_mx)  # [1, 1, 170, 32]
@@ -157,10 +152,7 @@ class Network(nn.Module):
 
         # output layer
         self.end_linear_1 = Linear(c_in=args.hid_dim * 8, c_out=args.hid_dim * 16)  # 改成4和256试试？
-        self.end_linear_2 = Linear(c_in=args.hid_dim * 16, c_out=args.seq_len)
-
-        # # position encoding
-        # self.pe = PositionalEmbedding(args.hid_dim)
+        self.end_linear_2 = Linear(c_in=args.hid_dim * 16, c_out=args.seq_len)\
 
     def forward(self, input):
         # x = self.start_linear(input)

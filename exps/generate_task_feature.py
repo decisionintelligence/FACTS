@@ -28,7 +28,6 @@ def save_checkpoint_callback(
 
     return callback
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', help='The dataset name')

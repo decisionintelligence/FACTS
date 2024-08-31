@@ -255,11 +255,8 @@ def evaluate(test_loader, ap, criterion):
 
 
 def geno_to_adj(arch):
-    # arch.shape = [7, 2]
-    # 输出邻接矩阵，和节点特征
-    # 这里的邻接矩阵对应op为顶点的DAG，和Darts相反
-    # GCN处理无向图，这里DAG是有向图，所以需要改改？？？参考Wei Wen的文章
-    node_num = len(arch) + 2  # 加上一个input和一个output节点
+
+    node_num = len(arch) + 2
     adj = np.zeros((node_num, node_num))
     ops = [len(PRIMITIVES)]
     for i in range(len(arch)):
@@ -279,12 +276,10 @@ def geno_to_adj(arch):
 
 class ArchPredictor(nn.Module):
     def __init__(self, n_nodes, n_ops, n_layers=2, ratio=2, embedding_dim=128):
-        # 后面要参考下Wei Wen文章的GCN实现
         super(ArchPredictor, self).__init__()
         self.n_nodes = n_nodes
         self.n_ops = n_ops
 
-        # +2用于表示input和output node
         self.embedding = nn.Embedding(self.n_ops + 2, embedding_dim=embedding_dim)
         self.gcn = GCN(n_layers=n_layers, in_features=embedding_dim,
                        hidden=embedding_dim, num_classes=embedding_dim)
@@ -301,8 +296,6 @@ class ArchPredictor(nn.Module):
 
     def forward(self, arch):
 
-        # 先将数组编码改成邻接矩阵编码
-        # arch.shape = [batch_size, 7, 2]
         b_adj, b_ops, features = [], [], []
         for i in range(len(arch)):
             adj, ops = geno_to_adj(arch[i])
@@ -312,7 +305,6 @@ class ArchPredictor(nn.Module):
 
 
 
-        # extract the arch feature
         b_adj = np.array(b_adj)
 
         b_ops = np.array(b_ops)
@@ -323,7 +315,6 @@ class ArchPredictor(nn.Module):
 
         feature = self.extract_features((b_adj, b_ops))
 
-        # extract the task feature
 
         logits = self.pred_fc(feature).squeeze(1)
 
@@ -341,7 +332,6 @@ class ArchPredictor(nn.Module):
         return v
 
     def extract_features(self, arch):
-        # 分别输入邻接矩阵和operation？
         if len(arch) == 2:
             matrix, op = arch
             return self._extract(matrix, op)
