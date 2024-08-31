@@ -1,6 +1,5 @@
 #!/bin/bash
 export PYTHONPATH=../
-
 #A800 8
 #CUDA_VISIBLE_DEVICES=0 python ../exps/collect_seeds.py --gpu_id 1 --range 0 350 &
 #CUDA_VISIBLE_DEVICES=1 python ../exps/collect_seeds.py --gpu_id 2 --range 350 700 &

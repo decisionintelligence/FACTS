@@ -22,7 +22,6 @@ import h5py
 from torch import Tensor
 import sklearn.preprocessing
 
-
 def config_dataloader(args):
     # Fill in with root output path
     adj_mx = np.zeros((args.num_nodes, args.num_nodes))
