@@ -262,9 +262,6 @@ class Random_NAS:
 
                 return
 
-        elif args.mode == 'iteratively':
-            archs = self.archs
-
     def result_process(self, arch, id, info1, info2, info3, time_cost):
         clean_set = []
         test_set = []

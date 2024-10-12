@@ -61,7 +61,7 @@ def read_params(path):
     return models
 
 
-params_dir = '/home/AutoCTS++/seeds/params_pool/params'
+params_dir = '/home/AutoCTS++/seeds/params'
 parent_models = read_params(params_dir)
 
 if_heavy = True

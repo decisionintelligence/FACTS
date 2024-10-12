@@ -54,13 +54,29 @@ pip install -r requirements.txt
 
 
 
-## Experiments reproduction
+## Zero-shot Search
 
-### Main results
+For ease of application, we provide the checkpoint of **TAP** in `NAS_Net/ArchPredictor/ArchPredictor_param`, the file of the optiminal subspace in `./seeds/selected_combs_3750.npy` ,and the collected seeds in `./seeds/pretrain`. One can utilize the checkpoint to directly search optimal architectures for their own tasks, the whole workflow is listed as below:
 
-#### Pretrain
+```shell
+# Generate statistical features for all subsets
+bash ./scripts/generate_statistical_feature_for_subsets.sh
 
-We provide all the scripts to repoduce the whole pretrain process and the main experimental results in our paper:
+# Generate semantic features for all subsets
+bash ./scripts/generate_task_feature_for_subsets.sh
+
+# Search the optimal ST-block (template)
+python ./exps/rank_the_optimal_subspace.py --mode search --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
+
+# Train the optimal ST-blocks with fast parameter adaptation (template)
+python ./exps/generate_seeds.py --mode train --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
+```
+
+
+
+## Pretrain
+
+You can also pretrain a TAP for yourself.
 
 As illustrated in FACTS,  we first iteratively prune the large search space through a GBM-based pruner, while the pruning process is coupled with the collection of seeds. We provide the correspongding scripts as belows:
 
@@ -208,75 +224,4 @@ python ./exps/generate_seeds.py --mode inherit --dataset SZ-TAXI --seq_len 168 -
 ```
 
 
-
-#### Zero-shot Search
-
-For ease of reproduction, we also provide the checkpoint of **TAP** in `NAS_Net/ArchPredictor/ArchPredictor_param`, the file of the optiminal subspace in `./seeds/selected_combs_3750.npy` ,and the collected seeds in `./seeds/pretrain`. One can utilize the checkpoint to directly search optimal architectures for their own tasks, the whole workflow is listed as below:
-
-```shell
-# Generate statistical features for all subsets
-bash ./scripts/generate_statistical_feature_for_subsets.sh
-
-# Generate semantic features for all subsets
-bash ./scripts/generate_task_feature_for_subsets.sh
-
-# Search the optimal ST-block (template)
-python ./exps/rank_the_optimal_subspace.py --mode search --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
-
-# Train the optimal ST-blocks with fast parameter adaptation (template)
-python ./exps/generate_seeds.py --mode train --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
-```
-
-
-
-### Other results
-
-We compare our iteratively pruning strategy with the one-time pruning baseline in our paper, so that we also provide the scripts to reproduce the results of the one-time pruning strategy:
-
-```shell
-# prune the search space in one time
-python ./exps/iteratively_search_space_pruning.py --mode one-shot
-```
-
-With the one-time strategy, we obtain a pruned search space and we also collect seeds from them to pretrain the TAP:
-
-```shell
-# Collect seeds
-bash ./scripts/pretrain_0.sh &
-bash ./scripts/pretrain_1.sh &
-bash ./scripts/pretrain_2.sh &
-bash ./scripts/pretrain_3.sh &
-bash ./scripts/pretrain_4.sh &
-bash ./scripts/pretrain_5.sh &
-bash ./scripts/pretrain_6.sh &
-```
-
-```shell
-# Pretrain the TAP
-python ./exps/rank_the_optimal_subspace.py --mode train
-```
-
-And we can also reproduce the results in **Table 9** by running the scripts as below:
-
-```shell
-# Search the optimal ST-block (template)
-python ./exps/rank_the_optimal_subspace.py --mode search --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
-
-# Train the optimal ST-blocks (template)
-python ./exps/generate_seeds.py --mode inherit --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
-```
-
-
-
-To compare with our **fast parameter adaptation** strategy, we also set two baselines named **simple average** and **wo/adapt**. We provide the scripts to reproduce their results in **Table 11**：
-
-```shell
-# wo/adapt
-python ./exps/generate_seeds.py --mode train --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
-```
-
-```shell
-# simple average
-python ./exps/generate_seeds.py --mode mean --dataset <dataset_name> --seq_len <the windwow size> --pred_len <the horizon size>
-```
 
