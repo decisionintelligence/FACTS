@@ -2,9 +2,11 @@
 
 FACTS is an efficient and fully automated CTS forecasting framework that can find an ST-block that offers optimal accuracy on arbitrary unseen tasks and can make forecasts in minutes.
 
-We provide the source code of FACTS in this repository. 
+<div align="center">
+<img alt="Logo" src="images/overview.png" width="100%"/>
+</div>
 
-We are further optimizing our code and welcome any suggestions for modifications.
+
 
 ## Dataset link
 
