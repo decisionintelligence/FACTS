@@ -3,3 +3,4 @@
 dataset/
 *__pycache__/
 .vscode/
+seeds/
