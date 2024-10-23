@@ -1,4 +1,3 @@
-
 import argparse
 import os
 import time
@@ -14,7 +13,7 @@ import utils
 from NAS_Net.ArchPredictor.gin_based_arch_predictor import ArchPredictor, train_baseline_epoch, evaluate
 
 from NAS_Net.genotypes import PRIMITIVES
-from utils import AP_DataLoader
+from utils import AP_DataLoader, get_archs
 from exist_file_map import *
 from scipy.stats import spearmanr
 from tqdm import tqdm
@@ -284,72 +283,28 @@ def main():
 
         statistical_feature = np.squeeze(statistical_feature)
 
-        mean = np.load(os.path.join(model_dir, f'mean_{args.exp_id}.npy'))
-        std = np.load(os.path.join(model_dir, f'std_{args.exp_id}.npy'))
-        epsilon = np.load(os.path.join(model_dir, f'epsilon_{args.exp_id}.npy'))
-
-        statistical_feature = np.squeeze((statistical_feature - mean) / (std + epsilon))
-        statistical_feature = statistical_feature[0:256]
-        ap.eval()
-
-        def compare(arch0, arch1):
-            with torch.no_grad():
-                outputs = ap([arch0], [arch1], [task_feature], [statistical_feature])
-                pred = torch.round(outputs)
-            # pred == 0代表arch0的性能不如arch1
-            if pred == 0:
-                return -1
-            else:
-                return 1
-
+        search_space = np.load(os.path.join(model_dir,'combs_3750.npy'),allow_pickle=True)
         archs = []
-        for i in range(args.sample_scale):
-            archs.append(sample_arch())
-        t1 = time.time()
+        for comb in search_space:
+            current_archs = get_archs(comb)
+            archs.extend(current_archs)
 
-        if args.num_threads > 1:
-            # 并行
-            slice_len = args.sample_scale // args.num_threads
-            archs_slices = [
-                archs[i * slice_len:(i + 1) * slice_len] if i < args.num_threads - 1 else archs[i * slice_len:]
-                for i in range(args.num_threads)]
+        slice_len = args.inference_batch_size
+        slice_num = len(archs) // slice_len
+        archs_slices = [
+            archs[i * slice_len:(i + 1) * slice_len] if i < slice_num - 1 else archs[i * slice_len:]
+            for i in range(slice_num)]
 
-            def process_item(item):
-                # 快速排序，控制比较次数在nlogn
-                # return sorted(item, key=cmp_to_key(compare),reverse=True)
-                # top-k堆，控制比较次数在klogn
-                return heapq.nlargest(args.top_k, item, key=cmp_to_key(compare))
+        outputs = []
+        ap.eval()
+        with torch.no_grad():
+            for arch_batch in archs_slices:
+                output = ap(arch_batch, [task_feature] * len(arch_batch), [statistical_feature] * len(arch_batch))
+                outputs.extend(output.detach().cpu().numpy())
 
-            # 使用 ThreadPoolExecutor 并行处理
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                results = list(executor.map(process_item, archs_slices))
-
-            # 要选择出全局的top_k个，在并行过程中需要把每个分块的top_k个都放进去，因为这样能保证真实的top_k个一定在这些里面
-            archs = []
-            for i in range(len(results)):
-                archs += results[i][0:args.top_k]
-
-            # 将args.num_threads * args.top_k个候选项从大到小排序一遍，得到真实的top_k个
-            # 快速排序
-            # sorted_archs = sorted(archs, key=cmp_to_key(compare), reverse=True)
-
-            # 两两比较计分
-            score_array = [0] * len(archs)
-            for i in range(len(archs)):
-                for j in range(i + 1, len(archs)):
-                    if compare(archs[i], archs[j]) == 1:
-                        score_array[i] += 1
-                    else:
-                        score_array[j] += 1
-            indices = np.argsort(-np.array(score_array))
-            sorted_archs = [archs[i] for i in indices]
-
-        else:
-            sorted_archs = sorted(archs, key=cmp_to_key(compare), reverse=True)
-
-        # 保留排名前五的arch
-        print(f'pred time: {time.time() - t1}')
-        print(sorted_archs[:args.top_k])
+        sorted_archs = list(sorted(zip(outputs, archs), key=lambda x: x[0]))
+        _, archs = zip(*sorted_archs)
+        print(archs[:args.top_k][1])
         param_dir = os.path.join('../results/searched_archs', args.dataset)
         if not os.path.exists(param_dir):
             os.makedirs(param_dir)
