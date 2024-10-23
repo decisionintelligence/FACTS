@@ -484,9 +484,6 @@ def generate_from_data(origin_data, length, train_len, pred_len, in_dim, transfo
         print(x.shape)
         data['x_' + key] = x.astype('float32')
         data['y_' + key] = y.astype('float32')
-        # if transformer:  # 啥意思？
-        #     x = transformer(x)
-        #     y = transformer(y)
 
     return data
 
@@ -539,7 +536,6 @@ def data_preprocess(data_path, train_len, pred_len, in_dim, adj_mx, type='csv', 
         origin_data = origin_data.iloc[1:, 1:]
 
         origin_data = np.array(origin_data)
-        # origin_data = np.expand_dims(origin_data, -1)
         origin_data = dim_uniform(origin_data)
 
         length = len(origin_data)
@@ -648,9 +644,9 @@ def data_preprocess(data_path, train_len, pred_len, in_dim, adj_mx, type='csv', 
             for j in range(num_nodes):
                 sh_mx[i, j] = min(sh_mx[i, j], sh_mx[i, k] + sh_mx[k, j], 511)
 
-    sh_mx = sh_mx.T  # (170, 170) 为什么转置啊？
-    far_mask_delta = 7  # mask稀疏程度
-    dtw_delta = 5  # mask稀疏程度
+    sh_mx = sh_mx.T
+    far_mask_delta = 7
+    dtw_delta = 5
     geo_mask = torch.zeros(num_nodes, num_nodes)
     indices = torch.tensor(sh_mx >= far_mask_delta)
     geo_mask[indices] = 1
@@ -838,7 +834,7 @@ def get_adj_matrix(distance_df_filename, num_of_vertices, type_='connectivity', 
             if len(row) != 3:
                 continue
             i, j, distance = int(row[0]), int(row[1]), float(row[2])
-            if type_ == 'connectivity':  # 啥意思啊，表里有的就置1？
+            if type_ == 'connectivity':
                 A[i, j] = 1
                 A[j, i] = 1
             elif type_ == 'distance':
@@ -1531,7 +1527,6 @@ class standard_normalization:
         pass
 
     def fit(self, data):
-        # 计算每个任务的均值和标准差
         archs, accs = zip(*data)
         mean = np.mean(accs, axis=0)
         std = np.std(accs, axis=0)
@@ -1539,13 +1534,11 @@ class standard_normalization:
         self.std = std
 
     def transform(self, data):
-        # 对每个任务的输出值进行归一化
         archs, accs = zip(*data)
         normalized_accs = (accs - self.mean) / self.std
         return list(zip(archs, normalized_accs))
 
     def reverse_transform(self, data):
-        # 对每个任务的输出值进行反归一化
         archs, accs = zip(*data)
         archs = np.array(archs)
         accs = np.array(accs)

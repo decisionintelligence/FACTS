@@ -85,11 +85,8 @@ class TS2Vec:
         if temporal_missing[0] or temporal_missing[-1]:
             train_data = centerize_vary_length_series(train_data)
 
-        # 剔除全Nan的Instance
         train_data = train_data[~np.isnan(train_data).all(axis=2).all(axis=1)]
-        # TensorDataset源代码表明其支持输入多个tensor(支持并行)，所以第一维是张量数,get item类似于zip，返回每个张量的第index个分量
         train_dataset = TensorDataset(torch.from_numpy(train_data).to(torch.float))
-        # 相当于在instance的维度构建dataset，分batch。首先通过数据maxlength切割，生成很多instance（数据原来可能是100个instance乘以几万长度，现在相当于通过增加instance数量保证每个的长度不至于太长）
         train_loader = DataLoader(train_dataset, batch_size=min(self.batch_size, len(train_dataset)), shuffle=True,
                                   drop_last=True)
 

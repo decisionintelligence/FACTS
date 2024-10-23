@@ -25,10 +25,10 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 parser = argparse.ArgumentParser(description='Args for zero-cost NAS')
 parser.add_argument('--seed', type=int, default=301, help='random seed')
 parser.add_argument('--cuda', type=bool, default=True)
-parser.add_argument('--batch_size', type=int, default=64)  # 要调整，64的时候效果更好？
-parser.add_argument('--ap_lr', type=float, default=0.0001)  # 要调整
-parser.add_argument('--layers', type=int, default=4)  # 0.001+adam or 0.0001+adam
-parser.add_argument('--d_model', type=int, default=128)  # 0.001+adam or 0.0001+adam
+parser.add_argument('--batch_size', type=int, default=64)
+parser.add_argument('--ap_lr', type=float, default=0.0001)
+parser.add_argument('--layers', type=int, default=4)
+parser.add_argument('--d_model', type=int, default=128)
 
 parser.add_argument('--steps', type=int, default=4, help='number of nodes of a cell')
 parser.add_argument('--dataset', type=str, default='pems/PEMS03', help='location of dataset')
@@ -38,9 +38,9 @@ parser.add_argument('--loader_mode', type=str, default='quadratic', help='[quadr
 
 parser.add_argument('--seq_len', type=int, default=12, help='the sequence length of the sample')
 parser.add_argument('--exp_id', type=int, default=-1, help='the exp_id used to identify the experiment')
-parser.add_argument('--epochs', type=int, default=100)  # 架构比较器训练轮数
-parser.add_argument('--num_threads', type=int, default=5)  # 并行找大小的线程数
-parser.add_argument('--top_k', type=int, default=5)  # 找前几的架构
+parser.add_argument('--epochs', type=int, default=100)
+parser.add_argument('--num_threads', type=int, default=5)
+parser.add_argument('--top_k', type=int, default=5)
 
 args = parser.parse_args()
 
@@ -96,8 +96,8 @@ def sample_arch():
             nodes = np.random.choice(range(i + 1), 1)
             arch.extend([(nodes[0], ops[0])])
         else:
-            ops = np.random.choice(range(num_ops), 2)  # 两条input edge对应两个op（可以相同）
-            nodes = np.random.choice(range(i), 1)  # 只有一条可以选择的边
+            ops = np.random.choice(range(num_ops), 2)
+            nodes = np.random.choice(range(i), 1)
             # nodes = np.random.choice(range(i + 1), 2, replace=False)
             arch.extend([(nodes[0], ops[0]), (i, ops[1])])
 
@@ -241,7 +241,7 @@ def main():
         tolerance = 0
         train_noisy_loop = tqdm(range(args.epochs), ncols=250, desc='pretrain ap with noisy_set')
 
-        for epoch in train_noisy_loop:  # 训练NAC多少个epochs？好像只能凭经验，因为没有test set
+        for epoch in train_noisy_loop:
             train_loss, valid_loss, rho, acc = train_baseline_epoch(train_loader,
                                                                     train_loader,
                                                                     ap,

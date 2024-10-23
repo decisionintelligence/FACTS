@@ -73,13 +73,10 @@ def load_subset_npy(name):
 def load_npy(name, ratio):
     arr = np.load(f'../data/{name}.npy', allow_pickle=True)[:, :, 0:].astype('float')
 
-    # 获取数组的形状
     nan_mask = np.isnan(arr)
 
-    # 计算沿轴0的均值，但在计算之前检查轴上是否有NaN值
     mean_values = np.where(np.all(nan_mask, axis=2, keepdims=True), 0, np.nanmean(arr, axis=2, keepdims=True))
 
-    # 使用 np.where 将NaN值替换为均值
     arr_filled = np.where(nan_mask, mean_values, arr)
 
     origin_data = arr_filled

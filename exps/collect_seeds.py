@@ -61,22 +61,22 @@ print(f'number of op: {num_ops}')
 num_edges = 1 + 2 * (args.steps - 1)
 
 
-def generate_EDF(arch_seeds, threshold):  # 这个阈值应该再迭代过程中动态调整？？？考虑到EDF的计算方式，可能会有很多不同comb对应相同label，如何处理这个问题？
+def generate_EDF(arch_seeds, threshold):
     """from (arch, mae) to (comb, EDF)"""
 
     # collect (comb, acc_list) pair
     comb_to_accs = dict()
     accs = []
     for arch_acc in arch_seeds:
-        comb, task, arch, acc = arch_acc  # 要不要对mae取倒数？
+        comb, task, arch, acc = arch_acc
         _, op = zip(*arch)
         comb = to_categorical(op, num_classes=len(PRIMITIVES), dtype=int)
         comb = np.sum(comb, axis=0).tolist()
-        str_comb = ''.join(str(v) for v in comb)  # 转成str方便用字典存储
+        str_comb = ''.join(str(v) for v in comb)
         comb_to_accs.setdefault(str_comb, []).append(acc)
         accs.append(acc)
 
-    # generate EDF label  要不要借鉴那篇NeurIPS来改进EDF指标(初步观察赶紧加入更好？)，考虑一下？如何确定阈值？
+
     sorted_accs = sorted(accs)
     # threshold_e = sorted_accs[int(len(sorted_accs) * threshold_ratio)]
     # threshold_50 = sorted_accs[int(len(sorted_accs) * 0.5)]
@@ -152,7 +152,7 @@ def seed_loader(noisy_comb_to_EDF):
 
 
 def get_splits(num):
-    # 先把7分解为若干项之和，找到所有的分解方式
+
     all_splits = []
 
     def partition(n, search_start=1, res=[]):
@@ -171,7 +171,6 @@ def get_splits(num):
 
 
 def permuteUnique(nums):
-    # 计算有重复数组的无重复全排列
     ans = [[]]
     for n in nums:
         ans = [l[:i] + [n] + l[i:]
@@ -184,10 +183,10 @@ def get_combs(num_ops, splits):
 
     all_combs = []
     for split in splits:
-        if num_ops < len(split):  # 丢弃不合法的分割
+        if num_ops < len(split):
             continue
         fill_length = num_ops - len(split)
-        filled_split = [0] * fill_length + split  # 用0填充，使长度为15，然后求无重复全排列
+        filled_split = [0] * fill_length + split
         perm_split = permuteUnique(filled_split)
         all_combs.extend(perm_split)
     return all_combs
@@ -293,7 +292,6 @@ class Random_NAS:
             self.dataloader, self.adj_mx, self.scaler, _, self.geo_mask, self.sem_mask = self.configure_task(
                 task_id)
 
-            # 返回每个epoch的train valid test metrics,test仅用于观察
             info1, info2, info3 = train_arch_from_scratch(self.dataloader, self.adj_mx, self.scaler, arch,
                                                           self.geo_mask, self.sem_mask)
 
@@ -310,7 +308,7 @@ def main():
     for comb in all_combs:
         if len(selected_combs_12w) == 100:
             break
-        if len(get_archs(comb)) < 200:  # 丢弃不足200个arch的subspace
+        if len(get_archs(comb)) < 200:
             continue
         selected_combs_12w.append(comb)
 
@@ -320,7 +318,7 @@ def main():
     new_selected_combs_12w = np.load('../seeds/pretrain/selected_combs_12w.npy', allow_pickle=True)
 
     all_archs = []
-    for comb_id, comb in new_selected_combs_12w:  # 每个comb选30个seed先
+    for comb_id, comb in new_selected_combs_12w:
         archs = get_archs(comb)
         all_archs.append([comb_id, archs])
     np.save(f'../seeds/pretrain/all_archs_from_selected_combs_12w.npy',
@@ -381,7 +379,7 @@ def main():
     lgb_train = lgb.Dataset(train_x, train_y)
 
     gbm_params = {
-        'boosting_type': 'gbdt',  # 是不是应该换成LGBoost？
+        'boosting_type': 'gbdt',
         'objective': 'regression',
         'metric': {'l2'},
         'num_leaves': 31,
@@ -410,11 +408,10 @@ def main():
     for comb in combs_slice:
         if len(selected_combs) == 100:
             break
-        if len(get_archs(comb)) < 200:  # 丢弃不足200个arch的subspace
+        if len(get_archs(comb)) < 200:
             continue
         selected_combs.append(comb)
 
-    # 需要保证comb_id都不同，所以要加上之前几轮的数量
     new_selected_combs = [[i + 500, list(selected_combs[i])] for i in range(len(selected_combs))]
     np.save('../seeds/pretrain/selected_combs_3750.npy', np.array(new_selected_combs, dtype=object),
             allow_pickle=True)
@@ -509,7 +506,7 @@ def train_arch_from_scratch(dataloader, adj_mx, scaler, arch, geo_mask, sem_mask
         print(f'train epoch time: {time.time() - t2}')
 
         # eval
-        with torch.no_grad():  # 要统计三个metric，best of top n epochs，需要多个随机种子吗？加transformer或者Autoformer？
+        with torch.no_grad():
             model = model.eval()
 
             valid_loss = []

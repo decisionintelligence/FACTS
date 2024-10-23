@@ -42,17 +42,16 @@ OPS = {
 }
 
 
-# 从指定文件夹下读取所有参数文件并且提取arch架构，和参数
 def read_params(path):
     files = os.listdir(path)
-    pattern = r'\[\[.*?\]\]'  # 匹配形如 [[...]] 的字符串
+    pattern = r'\[\[.*?\]\]'
     models = []
     for file_name in files:
         match = re.search(pattern, file_name)
 
         if match:
             result_string = match.group(0)
-            result_list = eval(result_string)  # 将匹配到的字符串转换为列表
+            result_list = eval(result_string)
             print(result_list)
             model_param = torch.load(os.path.join(path, file_name))
             models.append((result_list, model_param))
@@ -84,11 +83,10 @@ def shape_filter(actual_tensor, candidate_tensor_list, max_num=10):
     return new_tensor_list[0:num]
 
 
-# 通过正则表达式匹配父模型的参数，并且将所有候选项返回，其中op_id代表算子编号
 def search_params(op_id, key_word):
     similar_params_lst = []
     for arch, model_params in parent_models:
-        # 获取第一个arch中对应算子所在的位置(第几个op)，为了后续提取参数用，由于一个结构可能有几个相同的算子，所以用一个list放index
+
         candidate_op_idex_list = []
         for id, (_, op) in enumerate(arch):
             if op == op_id:
@@ -163,7 +161,6 @@ class inherit_linear(nn.Linear):
 
         result = super().forward(input)
 
-        # 欺骗torch，让其把这个动态生成的weight和bias维护在state_dict中，但是实际正向传播时重新生成
         self.weight = nn.Parameter(self.weight, requires_grad=False)
         self.bias = nn.Parameter(self.bias, requires_grad=False)
         return result

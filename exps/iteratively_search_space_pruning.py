@@ -99,7 +99,7 @@ def load_final_noisy_valid_set(epoch):
 
 
 
-def generate_EDF(arch_seeds, threshold):  # 这个阈值应该再迭代过程中动态调整？？？考虑到EDF的计算方式，可能会有很多不同comb对应相同label，如何处理这个问题？
+def generate_EDF(arch_seeds, threshold):
     """from (arch, mae) to (comb, EDF)"""
 
     # collect (comb, acc_list) pair
@@ -132,7 +132,7 @@ def generate_EDF(arch_seeds, threshold):  # 这个阈值应该再迭代过程中
 
 def main():
     gbm_params = {
-        'boosting_type': 'gbdt',  # 是不是应该换成LGBoost？
+        'boosting_type': 'gbdt',
         'objective': 'regression',
         'metric': {'l2'},
         'num_leaves': args.leaves,

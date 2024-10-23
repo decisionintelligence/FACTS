@@ -24,7 +24,6 @@ parser.add_argument('--sample_num', type=int, default=20, help='num of the subse
 args = parser.parse_args()
 torch.set_num_threads(3)
 
-# 按照数据集自身的长度的比例设置变量维数和时间戳长度的区间，同时设置上下界，筛除一些过小或者过大的样例
 variable_sup = 300
 variable_inf = 3
 time_sup = 25000
