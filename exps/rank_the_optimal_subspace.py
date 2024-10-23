@@ -283,11 +283,17 @@ def main():
 
         statistical_feature = np.squeeze(statistical_feature)
 
-        search_space = np.load(os.path.join(model_dir,'combs_3750.npy'),allow_pickle=True)
-        archs = []
-        for comb in search_space:
-            current_archs = get_archs(comb)
-            archs.extend(current_archs)
+        search_space_path = os.path.join(model_dir, f'archs.npy')
+        if not os.path.exists(search_space_path):
+            search_space = np.load(os.path.join(model_dir, 'combs_3750.npy'), allow_pickle=True)
+            archs = []
+            for comb in search_space:
+                current_archs = get_archs(comb)
+                archs.extend(current_archs)
+            archs = archs[:7000000]
+            np.save(search_space_path, archs, allow_pickle=True)
+        else:
+            np.load(search_space_path, allow_pickle=True)
 
         slice_len = args.inference_batch_size
         slice_num = len(archs) // slice_len
