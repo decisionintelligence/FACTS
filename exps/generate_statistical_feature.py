@@ -1,4 +1,3 @@
-
 import argparse
 import concurrent.futures
 
@@ -8,13 +7,16 @@ from utils import set_seed
 import pandas as pd
 import NAS_Net.ts2vec_model.datautils as datautils
 from tsfresh import extract_features
+from tsfresh.feature_extraction import EfficientFCParameters
 
 
 def convert_to_time_series_container_and_extract_features(data: np.ndarray) -> pd.DataFrame:
+    efficient_fc_parameters = EfficientFCParameters()
     df = pd.DataFrame(data)
     df.insert(0, "id", 1)
     df.insert(1, "time", range(df.shape[0]))
-    features = extract_features(df, column_id="id", column_sort="time", n_jobs=0)
+    features = extract_features(df, column_id="id", column_sort="time", n_jobs=0,
+                                default_fc_parameters=efficient_fc_parameters)
 
     return features
 
@@ -63,7 +65,6 @@ if __name__ == '__main__':
         raise ValueError(f"Unknown loader {args.loader}.")
 
     print('done')
-
 
     train_data = train_data[:, :, 0]
     train_data = np.transpose(train_data, (1, 0))
