@@ -275,7 +275,7 @@ def main():
 
     elif args.mode == 'search':
         torch.set_num_threads(args.num_threads)
-        ap.load_state_dict(torch.load(os.path.join(model_dir, f'ap_{args.exp_id}.pth')))
+        ap.load_state_dict(torch.load(os.path.join(model_dir, f'ArchPredictor.pth')))
 
         task_feature = np.load(os.path.join('../task_feature', args.dataset, f'{args.seq_len}_ts2vec_task_feature.npy'))
         statistical_feature = np.load(
